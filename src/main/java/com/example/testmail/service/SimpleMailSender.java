@@ -42,7 +42,7 @@ public class SimpleMailSender {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         // Используем MimeMessageHelper для более простой работы с содержимым письма
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
 
         // Устанавливаем отправителя
         String setFrom = ((JavaMailSenderImpl) mailSender).getUsername();
@@ -57,6 +57,7 @@ public class SimpleMailSender {
         // Вызываем метод для сборки тела письма с изображениями
         buildMessage(mailData, helper);
 
+
         // Отправляем письмо
         mailSender.send(mimeMessage);
     }
@@ -67,8 +68,9 @@ public class SimpleMailSender {
 
         // Устанавливаем HTML-тело письма
 
-        helper.setText(processedBody, true);  // true означает, что это HTML формат
-        //helper.setText(processedBody);
+       // helper.setText(processedBody, true);  // true означает, что это HTML формат
+        helper.setText(" ", processedBody);
+        log.warn(processedBody);
     }
 
     private String processImagesInBody(String body) throws IOException {
@@ -86,7 +88,7 @@ public class SimpleMailSender {
                 byte[] imageBytes = Files.readAllBytes(Paths.get(imgPath));
                 //String base64Image = Base64.getEncoder().encodeToString(imageBytes);
                 String base64Image = new String(Base64.getEncoder().encode(imageBytes), "UTF-8");
-
+               // log.warn(base64Image);
 
                 // Формируем новый тег <img> с Base64 изображением
                 String base64Tag = String.format("<img src=\"data:image/jpg;base64,%s\" />", base64Image);
